@@ -1,0 +1,28 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/illumina_nextSeq_500> a <http://purl.obolibrary.org/obo/OBI_0002021> , <http://www.ebi.ac.uk/efo/EFO_0000001> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/rna_seq> a <http://edamontology.org/topic_3170> , <http://www.ebi.ac.uk/efo/EFO_0000001> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/sequence_alignment> a <http://edamontology.org/data_1383> , <http://www.ebi.ac.uk/efo/EFO_0000001> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/reference_sequence> a <http://www.ebi.ac.uk/efo/EFO_0000001> ;
+
+# Repeat per column
+{% for sname in rnadata %}
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> a <http://edamontology.org/operation_3680> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> <http://www.w3.org/ns/prov#used> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/illumina_nextSeq_500> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> <http://www.w3.org/ns/prov#used> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/rna_seq> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> <http://www.w3.org/ns/prov#used> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/sequence_alignment> .
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> <http://www.w3.org/ns/prov#used> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/reference_sequence> .
+<http://www.w3.org/ns/prov#used> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/biosample/{{sname}}> ;
+
+# Repeat per cell
+{% for geneid in rnadata[sname] %}
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/measurement/{{sname}}/{{geneid}}> a <http://www.ebi.ac.uk/efo/EFO_0001444> , <http://edamontology.org/operation_3800> ;
+<http://semanticscience.org/resource/SIO_000628> <http://rdf.ebi.ac.uk/resource/ensembl/{{geneid}}> .
+<http://semanticscience.org/resource/SIO_000300> "{{rnadata[sname][geneid]}}"^^xsd:float ;
+<https://{{settings["host"]}}/rdf/{{settings["host"]}}/analysis/{{sname}}> <http://semanticscience.org/resource/SIO_000628> <https://{{settings["host"]}}/rdf/{{settings["host"]}}/measurement/{{sname}}/{{geneid}}> ;
+{% endfor %}
+{% endfor %}
